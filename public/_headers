@@ -1,0 +1,11 @@
+# Never let the HTML document go stale -- it must always be revalidated so
+# it can't reference JS/CSS chunk hashes from a previous deploy that no
+# longer exist (this caused a "ChunkLoadError" -> blank page bug on the
+# main Digital Workshop site the first time it shipped to Cloudflare Pages).
+/*
+  Cache-Control: public, max-age=0, must-revalidate
+
+# The Next.js build output is content-hashed (filename changes whenever the
+# content does), so these are safe to cache forever.
+/_next/static/*
+  Cache-Control: public, max-age=31536000, immutable
