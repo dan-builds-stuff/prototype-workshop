@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { FlaskConical, FileText, NotebookPen, ShieldQuestion, Home } from "lucide-react";
+import { FlaskConical, FileText, NotebookPen, ShieldQuestion, Home, LayoutGrid } from "lucide-react";
 import {
   Command,
   CommandEmpty,
@@ -86,6 +86,14 @@ export function CommandPalette() {
               <CommandItem onSelect={() => go("/forms")}>
                 <FileText className="h-4 w-4 text-muted" aria-hidden="true" />
                 Protected forms
+              </CommandItem>
+              <CommandItem onSelect={() => go("/board")}>
+                <LayoutGrid className="h-4 w-4 text-muted" aria-hidden="true" />
+                Board (live display)
+              </CommandItem>
+              <CommandItem onSelect={() => go("/board/control")}>
+                <LayoutGrid className="h-4 w-4 text-muted" aria-hidden="true" />
+                Board control
               </CommandItem>
               <CommandItem onSelect={() => go("/notes")}>
                 <NotebookPen className="h-4 w-4 text-muted" aria-hidden="true" />

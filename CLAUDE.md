@@ -120,3 +120,15 @@ same bar as the main site.
 Placeholder data throughout (2 prototypes, 2 protected forms, 2 experiment
 notes) so the interface can be judged honestly before real content goes in.
 Replace one card at a time — don't backfill everything at once.
+
+## Board (exception to "forms are placeholders")
+`/board` (full-bleed, no site chrome — see src/components/site-chrome.tsx)
+and `/board/control` are a real, wired-up feature, not a UI placeholder
+like the rest of src/data/forms.ts. It needed backend state for the first
+time in this repo, which had to fit the static-export/Cloudflare Pages
+deployment shape: Cloudflare Pages Functions (functions/) for the API,
+Cloudflare KV for storage, and functions/board/control/_middleware.ts
+(Cloudflare's own middleware convention, not Next's — Next middleware
+does not run on a static export) for the access gate. Full detail and the
+one-time setup steps are in BOARD.md — read that before touching
+anything under functions/ or src/lib/board/.

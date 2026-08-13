@@ -1,0 +1,20 @@
+# wrangler.toml
+#
+# Used for local testing only (`npm run pages:dev` -> `wrangler pages dev`).
+# The actual deployed Cloudflare Pages project gets its KV binding and
+# CONTROL_PASSWORD secret configured in the Cloudflare dashboard (Pages
+# project -> Settings -> Functions / Environment variables) — see the
+# deployment runbook in README.md for exact steps. This file just lets
+# `wrangler pages dev` resolve the same binding name locally.
+
+name = "prototype-workshop"
+compatibility_date = "2025-01-01"
+pages_build_output_dir = "out"
+
+# Local dev KV binding. Replace `id` with the namespace ID from
+# `wrangler kv namespace create BOARD_KV` (see README) once you've created
+# it — until then, local `pages:dev` will use an empty local-only store.
+[[kv_namespaces]]
+binding = "BOARD_KV"
+id = "REPLACE_WITH_REAL_NAMESPACE_ID"
+preview_id = "REPLACE_WITH_REAL_PREVIEW_NAMESPACE_ID"

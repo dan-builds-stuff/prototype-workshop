@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
-import { SiteHeader } from "@/components/site-header";
-import { SiteFooter } from "@/components/site-footer";
-import { CommandPalette } from "@/components/command-palette";
+import { SiteChrome } from "@/components/site-chrome";
 import { CommandPaletteProvider } from "@/hooks/use-command-palette";
 import { ChunkErrorReload } from "@/components/chunk-error-reload";
 import "./globals.css";
@@ -47,11 +45,8 @@ export default function RootLayout({
         </a>
         <ChunkErrorReload />
         <CommandPaletteProvider>
-          <SiteHeader />
-          <CommandPalette />
-          <main id="main">{children}</main>
+          <SiteChrome>{children}</SiteChrome>
         </CommandPaletteProvider>
-        <SiteFooter />
       </body>
     </html>
   );

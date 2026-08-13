@@ -7,6 +7,7 @@ import { useCommandPalette } from "@/hooks/use-command-palette";
 const navLinks = [
   { label: "Prototypes", href: "/prototypes" },
   { label: "Forms", href: "/forms" },
+  { label: "Board", href: "/board/control" },
   { label: "Notes", href: "/notes" },
   { label: "Access", href: "/access" },
 ];

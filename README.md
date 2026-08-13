@@ -6,6 +6,12 @@ TypeScript, Tailwind CSS, Framer Motion and a hand-built shadcn/ui-style
 component set. Shares the main site's design language (palette, type,
 motion) but is deliberately not linked to it yet.
 
+## Board
+
+`/board` and `/board/control` are a live split-flap style message display with real
+weather and a real (not placeholder) posting form — see **[BOARD.md](./BOARD.md)** for
+what it is and the one-time Cloudflare KV/Pages Functions setup it needs.
+
 ## Stack
 
 - **Next.js 15** (App Router, React 19), static export (`output: "export"`)
