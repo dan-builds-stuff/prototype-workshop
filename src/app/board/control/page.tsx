@@ -45,9 +45,10 @@ export default function BoardControlPage() {
           Board control
         </h1>
         <p className="max-w-2xl text-balance text-lg leading-relaxed text-muted">
-          Rows 1-2 of the board are always live weather. This composes rows 3-8 — up to 6
-          lines of 32 characters. Unlike the placeholder forms elsewhere on this site, this
-          one is actually wired up: publishing here updates the live board immediately.
+          This composes rows 1-5 — up to 5 lines of 32 characters, centred by default. Row 6
+          is always blank, and rows 7-8 are always live weather. Unlike the placeholder forms
+          elsewhere on this site, this one is actually wired up: publishing here updates the
+          live board immediately.
         </p>
       </Reveal>
 

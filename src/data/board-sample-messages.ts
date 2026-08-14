@@ -15,7 +15,7 @@ export const BOARD_SAMPLE_MESSAGES: SampleMessage[] = [
   {
     id: "good-morning",
     label: "Good morning",
-    message: "GOOD MORNING.\n\nTODAY'S BUILD:\nPROTOTYPE WORKSHOP\n\nSTATUS: LEARNING",
+    message: "GOOD MORNING.\nTODAY'S BUILD:\nPROTOTYPE WORKSHOP\n\nSTATUS: LEARNING",
   },
   {
     id: "workshop-open",

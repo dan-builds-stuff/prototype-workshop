@@ -1,9 +1,10 @@
 # Board — deployment runbook
 
-`/board` is a live split-flap style message display (32 columns x 8 rows — rows 1-2 are
-permanently live weather, rows 3-8 are a posted message). `/board/control` is the private
-page to compose and publish a message to it. Unlike the rest of this site's forms, `/board/control`
-is a real, wired-up form — it actually posts to a backend, not a UI placeholder.
+`/board` is a live split-flap style message display (32 columns x 8 rows — rows 1-5 are a
+posted message, row 6 is always blank, rows 7-8 are permanently live weather). `/board/control`
+is the private page to compose and publish a message to it. Unlike the rest of this site's
+forms, `/board/control` is a real, wired-up form — it actually posts to a backend, not a UI
+placeholder.
 
 This is genuinely different infrastructure from the rest of the site, because it's the first
 thing here that needs state (an active message) and a protected route. Both had to fit this

@@ -11,7 +11,7 @@
 import { useMemo, useState } from "react";
 import { formatMessageForGrid } from "@/lib/board/format-message";
 import { DEFAULT_IDLE_MESSAGE, BOARD_SAMPLE_MESSAGES } from "@/data/board-sample-messages";
-import { CONTENT_ROWS } from "@/lib/board/message-types";
+import { CONTENT_ROWS, GRID_COLUMNS, SPACER_ROWS } from "@/lib/board/message-types";
 import { useBoardWeather } from "@/hooks/use-board-weather";
 import { MessagePreview } from "./message-preview";
 import { MessageValidator } from "./message-validator";
@@ -25,10 +25,14 @@ export function MessageComposer() {
   const [errorText, setErrorText] = useState<string | null>(null);
   const { lines: weatherLines } = useBoardWeather();
 
-  // Only 6 of the 8 grid rows are available to messages — rows 1-2 are
-  // permanently weather. Validate against that, not the full 8.
+  // Only CONTENT_ROWS of the 8 grid rows are available to messages — row 6
+  // is always a blank spacer and rows 7-8 are permanently weather.
+  // Validate against CONTENT_ROWS, not the full 8.
   const preview = useMemo(() => formatMessageForGrid(message, { rows: CONTENT_ROWS }), [message]);
-  const boardLines = useMemo(() => [...weatherLines, ...preview.lines], [weatherLines, preview.lines]);
+  const boardLines = useMemo(() => {
+    const spacerLines = Array.from({ length: SPACER_ROWS }, () => " ".repeat(GRID_COLUMNS));
+    return [...preview.lines, ...spacerLines, ...weatherLines];
+  }, [weatherLines, preview.lines]);
 
   async function publishMessage() {
     if (preview.overflow) return;

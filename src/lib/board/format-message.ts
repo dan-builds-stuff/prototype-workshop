@@ -5,6 +5,14 @@
 // Dependency-free and side-effect-free so it's trivially unit testable and
 // safe to import from both client components and Cloudflare Pages
 // Functions (functions/api/message.ts) for overflow validation.
+//
+// Session 4: content is centred by default (previously left-aligned) —
+// a deliberate change so manually posted messages read the same way the
+// weather rows always have. The dad-joke feed needs its own fixed
+// left/right layout instead — that's built separately in dad-joke.ts
+// using padLine() directly with an explicit alignment per part, rather
+// than teaching this generic wrap/pad path about statement/response
+// pairs. See session4-plan.md for why that's scoped this narrowly.
 
 import type { FormatOptions, FormattedGrid } from "./message-types";
 
@@ -19,6 +27,7 @@ export function formatMessageForGrid(
   const rows = options.rows ?? DEFAULT_ROWS;
   const uppercase = options.uppercase ?? true;
   const trimTrailingSpaces = options.trimTrailingSpaces ?? true;
+  const align = options.align ?? "center";
 
   const normalised = normaliseMessage(input, uppercase);
   const wrappedLines = wrapMessage(normalised, columns);
@@ -27,8 +36,8 @@ export function formatMessageForGrid(
 
   const paddedLines = Array.from({ length: rows }, (_, index) => {
     const line = visibleLines[index] ?? "";
-    const output = trimTrailingSpaces ? line.trimEnd() : line;
-    return output.padEnd(columns, " ").slice(0, columns);
+    const trimmed = trimTrailingSpaces ? line.trimEnd() : line;
+    return alignLine(trimmed, columns, align);
   });
 
   const cells = paddedLines.map((line) => line.split(""));
@@ -74,6 +83,18 @@ export function padLine(
   if (align === "left") return clean.padEnd(columns, " ");
   if (align === "right") return clean.padStart(columns, " ");
 
+  const left = Math.floor((columns - clean.length) / 2);
+  return " ".repeat(Math.max(0, left)) + clean + " ".repeat(Math.max(0, columns - clean.length - left));
+}
+
+// Same padding behaviour as padLine(), minus its re-normalise/re-uppercase
+// pass — used internally once a line has already been normalised with the
+// caller's own `uppercase` choice, so it doesn't get silently forced back
+// to uppercase for callers that asked for uppercase: false.
+function alignLine(value: string, columns: number, align: "left" | "right" | "center"): string {
+  const clean = value.slice(0, columns);
+  if (align === "left") return clean.padEnd(columns, " ");
+  if (align === "right") return clean.padStart(columns, " ");
   const left = Math.floor((columns - clean.length) / 2);
   return " ".repeat(Math.max(0, left)) + clean + " ".repeat(Math.max(0, columns - clean.length - left));
 }

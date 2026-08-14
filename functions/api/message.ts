@@ -89,13 +89,14 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     return Response.json({ error: "message is required." }, { status: 400 });
   }
 
-  // Only CONTENT_ROWS (6) lines are available to messages — rows 1-2 are
-  // permanently weather.
+  // Only CONTENT_ROWS lines are available to messages — row 6 is always a
+  // blank spacer and rows 7-8 are permanently weather (session 4: weather
+  // moved from the top to the bottom of the board).
   const preview = formatMessageForGrid(message, { rows: CONTENT_ROWS });
   if (preview.overflow) {
     return Response.json(
       {
-        error: `Message exceeds the ${CONTENT_ROWS}-row content area (rows 1-2 are reserved for weather).`,
+        error: `Message exceeds the ${CONTENT_ROWS}-row content area (row 6 is a spacer, rows 7-8 are reserved for weather).`,
         preview,
       },
       { status: 400 }
