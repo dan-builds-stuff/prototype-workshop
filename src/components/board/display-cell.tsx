@@ -19,16 +19,44 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
+import type { BoardColor } from "@/lib/board/message-types";
+import { useFlapSound } from "@/lib/board/flap-sound";
 
 type DisplayCellProps = {
   char: string;
   rowIndex: number;
   columnIndex: number;
   animationKey: number;
+  color?: BoardColor;
+  columns?: number;
 };
 
-export function DisplayCell({ char, rowIndex, columnIndex, animationKey }: DisplayCellProps) {
+// Colour -> Tailwind text colour class, matching the site's existing
+// palette 1:1 (tailwind.config.ts) — "white" is the default board colour,
+// not pure white, so it reads correctly against the dark cell background.
+const COLOR_CLASS: Record<BoardColor, string> = {
+  white: "text-foreground",
+  amber: "text-warm",
+  blue: "text-accent",
+  green: "text-success",
+};
+
+// Session: "colour and emoji" request also asked for a slower, sequential
+// flap animation — left to right, then row by row (previously all 256
+// cells flapped near-simultaneously with only a tiny 3ms/cell stagger,
+// capped at 0.4s total). Each row now visibly finishes before the next
+// starts, and a full-grid swap takes a few seconds rather than a third of
+// one — closer to how a real split-flap board sounds and looks in motion.
+const ROW_DELAY_S = 0.5;
+const COLUMN_DELAY_S = 0.045;
+
+export function DisplayCell({ char, rowIndex, columnIndex, animationKey, color = "white", columns = 32 }: DisplayCellProps) {
   const display = char === " " ? " " : char;
+  const playFlapClick = useFlapSound();
+  const delay = rowIndex * ROW_DELAY_S + columnIndex * COLUMN_DELAY_S;
+  // Only the last cell in each row triggers the click for that row's flap
+  // finishing — one click per row landing, not 256 clicks per swap.
+  const isRowAnchor = columnIndex === columns - 1;
 
   return (
     <div className="relative aspect-[0.73] min-w-0 overflow-hidden rounded-[4px] border border-border bg-elevated shadow-[inset_0_1px_1px_rgba(255,255,255,.06),0_1px_2px_rgba(0,0,0,.4)]">
@@ -39,11 +67,14 @@ export function DisplayCell({ char, rowIndex, columnIndex, animationKey }: Displ
           animate={{ rotateX: 0, opacity: 1 }}
           exit={{ rotateX: 85, opacity: 0 }}
           transition={{
-            delay: Math.min((rowIndex * 32 + columnIndex) * 0.003, 0.4),
-            duration: 0.16,
+            delay,
+            duration: 0.22,
             ease: "easeOut",
           }}
-          className="absolute inset-0 flex items-center justify-center text-[clamp(.7rem,2.4cqw,3.6rem)] font-semibold leading-none text-foreground"
+          onAnimationComplete={() => {
+            if (isRowAnchor) playFlapClick();
+          }}
+          className={`absolute inset-0 flex items-center justify-center text-[clamp(.7rem,2.4cqw,3.6rem)] font-semibold leading-none ${COLOR_CLASS[color]}`}
           style={{ transformOrigin: "center" }}
         >
           <span className="translate-y-[1px] font-mono">{display}</span>

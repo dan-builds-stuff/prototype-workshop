@@ -5,17 +5,19 @@
 // what you see here is exactly what the board will show.
 
 import { DisplayGrid } from "./display-grid";
+import type { RichChar } from "@/lib/board/message-types";
 
 type MessagePreviewProps = {
-  lines: string[];
+  lines?: string[];
+  richLines?: RichChar[][];
   animationKey?: number;
 };
 
-export function MessagePreview({ lines, animationKey = 0 }: MessagePreviewProps) {
+export function MessagePreview({ lines, richLines, animationKey = 0 }: MessagePreviewProps) {
   return (
     <div className="overflow-hidden rounded-2xl border border-border bg-surface p-4">
       <div className="aspect-video w-full rounded-xl border border-border bg-background p-4">
-        <DisplayGrid lines={lines} animationKey={animationKey} />
+        <DisplayGrid lines={lines} richLines={richLines} animationKey={animationKey} />
       </div>
     </div>
   );

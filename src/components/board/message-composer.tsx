@@ -9,7 +9,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { formatMessageForGrid } from "@/lib/board/format-message";
+import { formatRichMessageForGrid, toRichLine } from "@/lib/board/rich-text";
 import { DEFAULT_IDLE_MESSAGE, BOARD_SAMPLE_MESSAGES } from "@/data/board-sample-messages";
 import { CONTENT_ROWS, GRID_COLUMNS, SPACER_ROWS } from "@/lib/board/message-types";
 import { useBoardWeather } from "@/hooks/use-board-weather";
@@ -17,6 +17,15 @@ import { MessagePreview } from "./message-preview";
 import { MessageValidator } from "./message-validator";
 
 type PublishState = "idle" | "publishing" | "published" | "error";
+
+// Colour markup buttons — wraps the current selection (or inserts an empty
+// pair at the cursor) with [tag]...[/tag]. Kept to the site's existing
+// palette (tailwind.config.ts): amber, blue, green, plus default white.
+const COLOR_BUTTONS: { tag: string; label: string; swatchClass: string }[] = [
+  { tag: "amber", label: "Amber", swatchClass: "bg-warm" },
+  { tag: "blue", label: "Blue", swatchClass: "bg-accent" },
+  { tag: "green", label: "Green", swatchClass: "bg-success" },
+];
 
 export function MessageComposer() {
   const [message, setMessage] = useState(DEFAULT_IDLE_MESSAGE);
@@ -27,12 +36,20 @@ export function MessageComposer() {
 
   // Only CONTENT_ROWS of the 8 grid rows are available to messages — row 6
   // is always a blank spacer and rows 7-8 are permanently weather.
-  // Validate against CONTENT_ROWS, not the full 8.
-  const preview = useMemo(() => formatMessageForGrid(message, { rows: CONTENT_ROWS }), [message]);
-  const boardLines = useMemo(() => {
-    const spacerLines = Array.from({ length: SPACER_ROWS }, () => " ".repeat(GRID_COLUMNS));
-    return [...preview.lines, ...spacerLines, ...weatherLines];
-  }, [weatherLines, preview.lines]);
+  // Validate against CONTENT_ROWS, not the full 8. Rich (colour/emoji
+  // aware) formatter — falls back to plain white rendering when the
+  // message has no markup in it, so this replaces formatMessageForGrid()
+  // everywhere in the composer without changing behaviour for plain text.
+  const preview = useMemo(() => formatRichMessageForGrid(message, { rows: CONTENT_ROWS }), [message]);
+  const boardRichLines = useMemo(() => {
+    const spacerLines = Array.from({ length: SPACER_ROWS }, () => toRichLine("", GRID_COLUMNS));
+    const weatherRichLines = weatherLines.map((line) => toRichLine(line, GRID_COLUMNS));
+    return [...(preview.richCells ?? []), ...spacerLines, ...weatherRichLines];
+  }, [weatherLines, preview.richCells]);
+
+  function insertColorTag(tag: string) {
+    setMessage((current) => `${current}[${tag}]TEXT[/${tag}]`);
+  }
 
   async function publishMessage() {
     if (preview.overflow) return;
@@ -82,6 +99,25 @@ export function MessageComposer() {
         <label htmlFor="message" className="block text-sm font-medium text-muted">
           Message
         </label>
+
+        <div className="flex flex-wrap items-center gap-2">
+          {COLOR_BUTTONS.map((color) => (
+            <button
+              key={color.tag}
+              type="button"
+              onClick={() => insertColorTag(color.tag)}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-elevated px-2.5 py-1.5 text-xs font-medium text-muted hover:text-foreground"
+            >
+              <span className={`h-2.5 w-2.5 rounded-full ${color.swatchClass}`} aria-hidden="true" />
+              {color.label}
+            </button>
+          ))}
+          <span className="text-xs text-muted/70">
+            Wrap text like <code className="rounded bg-elevated px-1 py-0.5">[amber]LATE[/amber]</code> — emoji type
+            straight in, one grid cell each.
+          </span>
+        </div>
+
         <textarea
           id="message"
           value={message}
@@ -140,7 +176,7 @@ export function MessageComposer() {
         </div>
       </div>
 
-      <MessagePreview lines={boardLines} animationKey={animationKey} />
+      <MessagePreview richLines={boardRichLines} animationKey={animationKey} />
     </div>
   );
 }

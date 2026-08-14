@@ -12,7 +12,7 @@
 // this endpoint should never 500 just because nothing's been posted yet.
 
 import type { PagesFunction } from "@cloudflare/workers-types";
-import { formatMessageForGrid } from "../../src/lib/board/format-message";
+import { formatRichMessageForGrid } from "../../src/lib/board/rich-text";
 import { CONTENT_ROWS } from "../../src/lib/board/message-types";
 
 interface Env {
@@ -91,8 +91,10 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
 
   // Only CONTENT_ROWS lines are available to messages — row 6 is always a
   // blank spacer and rows 7-8 are permanently weather (session 4: weather
-  // moved from the top to the bottom of the board).
-  const preview = formatMessageForGrid(message, { rows: CONTENT_ROWS });
+  // moved from the top to the bottom of the board). Rich (colour/emoji
+  // aware) formatter, so overflow validation matches what the board will
+  // actually render, not a plain-text approximation.
+  const preview = formatRichMessageForGrid(message, { rows: CONTENT_ROWS });
   if (preview.overflow) {
     return Response.json(
       {

@@ -12,6 +12,27 @@ export interface FormattedGrid {
   wrappedLineCount: number;
   overflow: boolean;
   remainingSlots: number;
+  /** Present only when built via formatRichMessageForGrid() — same content
+   * as `lines`/`cells` but with per-character colour attached, for the
+   * colour/emoji posting feature. Plain formatMessageForGrid() output
+   * leaves this undefined; renderers fall back to `lines` in that case. */
+  richCells?: RichChar[][];
+}
+
+// Restricted to the site's existing palette (see tailwind.config.ts) rather
+// than free-form hex codes — a deliberate constraint so coloured messages
+// stay readable against the board's calm, physical-object aesthetic instead
+// of turning into a colour free-for-all. "white" is the default/no-markup
+// colour.
+export type BoardColor = "white" | "amber" | "blue" | "green";
+
+// One grapheme (not necessarily one UTF-16 code unit — covers compound
+// emoji, flags, skin-tone modifiers, etc. via Intl.Segmenter) plus the
+// colour it should render in. Emoji/symbols are single-cell width by
+// design (Dan's call) — no double-wide glyph support.
+export interface RichChar {
+  char: string;
+  color: BoardColor;
 }
 
 export type LineAlign = "left" | "right" | "center";
