@@ -4,6 +4,17 @@
 // than wide, matching a real split-flap unit) rather than square — a 32x8
 // grid of square cells works out to a 4:1 rectangle, filling only ~44% of
 // a 16:9 screen vertically; at 0.73 it's ~2.9:1, filling ~61%.
+//
+// Font size is in `cqw` (container query width), not `vw` — it needs to
+// scale with the grid's own rendered width, not the browser viewport.
+// /board's grid happens to be ~94vw wide so `vw` used to look right there
+// by coincidence, but the same grid embedded in a narrower panel (e.g. the
+// live preview on /board/control) rendered wildly oversized, clipped text
+// as a result — characters overflowing their cell and losing strokes
+// (an "I" reading as "T" once its bottom serif was clipped off). `cqw` is
+// relative to the container-query context DisplayGrid establishes on
+// itself, so this scales correctly regardless of how wide the grid actually
+// ends up on screen.
 
 "use client";
 
@@ -32,7 +43,7 @@ export function DisplayCell({ char, rowIndex, columnIndex, animationKey }: Displ
             duration: 0.16,
             ease: "easeOut",
           }}
-          className="absolute inset-0 flex items-center justify-center text-[clamp(.7rem,2.4vw,3.6rem)] font-semibold leading-none text-foreground"
+          className="absolute inset-0 flex items-center justify-center text-[clamp(.7rem,2.4cqw,3.6rem)] font-semibold leading-none text-foreground"
           style={{ transformOrigin: "center" }}
         >
           <span className="translate-y-[1px] font-mono">{display}</span>

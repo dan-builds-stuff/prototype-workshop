@@ -30,7 +30,7 @@ export function DisplayGrid({ message, lines, columns = 32, rows = 8, animationK
 
   return (
     <div
-      className="grid w-full gap-[clamp(3px,.45vw,9px)]"
+      className="grid w-full gap-[clamp(3px,.45cqw,9px)] [container-type:inline-size]"
       style={{
         gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
         gridTemplateRows: `repeat(${rows}, minmax(0, 1fr))`,

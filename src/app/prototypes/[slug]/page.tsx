@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Lock } from "lucide-react";
 import { Reveal } from "@/components/motion/reveal";
 import { StatusBadge } from "@/components/status-badge";
 import { AccessBadge } from "@/components/access-badge";
@@ -79,7 +79,10 @@ export default async function PrototypeDetailPage({
 
       {prototype.access !== "public" && (
         <Reveal delay={0.05} className="mt-8 max-w-2xl">
-          <ProtectedNotice access={prototype.access} />
+          <ProtectedNotice
+            access={prototype.access}
+            wired={!prototype.primaryAction.disabled}
+          />
         </Reveal>
       )}
 
@@ -104,8 +107,11 @@ export default async function PrototypeDetailPage({
         ) : (
           <Link
             href={prototype.primaryAction.href}
-            className="inline-flex h-11 items-center justify-center rounded-md bg-foreground px-5 text-sm font-medium text-background transition-colors duration-200 ease-calm hover:bg-foreground/90"
+            className="inline-flex h-11 items-center gap-2 justify-center rounded-md bg-foreground px-5 text-sm font-medium text-background transition-colors duration-200 ease-calm hover:bg-foreground/90"
           >
+            {prototype.access !== "public" && (
+              <Lock className="h-3.5 w-3.5" aria-hidden="true" />
+            )}
             {prototype.primaryAction.label}
           </Link>
         )}

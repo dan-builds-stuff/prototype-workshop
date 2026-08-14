@@ -8,9 +8,11 @@
 
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft, ShieldCheck } from "lucide-react";
+import { Eye, ShieldCheck } from "lucide-react";
 import { Reveal } from "@/components/motion/reveal";
 import { MessageComposer } from "@/components/board/message-composer";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Board control — dan's sandbox",
@@ -20,21 +22,25 @@ export const metadata: Metadata = {
 export default function BoardControlPage() {
   return (
     <article className="container py-20 sm:py-28">
-      <Reveal>
-        <Link
-          href="/board"
-          className="inline-flex items-center gap-2 text-sm text-muted transition-colors duration-200 ease-calm hover:text-foreground"
-        >
-          <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-          View the live board
-        </Link>
-      </Reveal>
-
-      <Reveal delay={0.06} className="mt-8 space-y-3">
+      <Reveal className="flex flex-wrap items-center justify-between gap-4">
         <span className="inline-flex items-center gap-1.5 rounded-full bg-warm/15 px-2.5 py-1 text-xs font-medium text-warm">
           <ShieldCheck className="h-3 w-3" aria-hidden="true" />
           Protected
         </span>
+
+        {/* A real, separate action — not styled like the "back to X"
+            navigation links used elsewhere, since it isn't going back to
+            anything, it's opening a different live page. */}
+        <Link
+          href="/board"
+          className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
+        >
+          <Eye className="h-4 w-4" aria-hidden="true" />
+          View live board
+        </Link>
+      </Reveal>
+
+      <Reveal delay={0.06} className="mt-8 space-y-3">
         <h1 className="max-w-2xl text-balance text-4xl font-medium tracking-tight sm:text-5xl">
           Board control
         </h1>
