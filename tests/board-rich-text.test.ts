@@ -47,11 +47,13 @@ describe("stripRichMarkup", () => {
 
 describe("formatRichMessageForGrid", () => {
   it("produces columns x rows richCells matching lines", () => {
+    // Session 6: a single-line message bottom-packs onto the last row of
+    // the block, not the first.
     const result = formatRichMessageForGrid("[green]ALL CLEAR[/green]", { rows: 5 });
     expect(result.rows).toBe(5);
     expect(result.richCells?.length).toBe(5);
     result.richCells?.forEach((row) => expect(row.length).toBe(32));
-    expect(result.lines[0]).toContain("ALL CLEAR");
+    expect(result.lines[result.lines.length - 1]).toContain("ALL CLEAR");
   });
 
   it("does not overflow for a message that fits", () => {

@@ -13,6 +13,15 @@
 // using padLine() directly with an explicit alignment per part, rather
 // than teaching this generic wrap/pad path about statement/response
 // pairs. See session4-plan.md for why that's scoped this narrowly.
+//
+// Session 6: content now packs toward the BOTTOM of the row block instead
+// of the top. With CONTENT_ROWS = 5 (rows 1-5), that means anything up to
+// 4 lines sits in rows 2-5 with row 1 left blank, and only a 5-line
+// message spills up into row 1 too. Confirmed with Dan: rows 2-5 are the
+// "normal" content area, row 1 is overflow spillover, not a row that's
+// used every time. Applies uniformly to plain messages, rich (colour/
+// emoji) messages, and the dad-joke feed — see the matching change in
+// rich-text.ts and dad-joke.ts.
 
 import type { FormatOptions, FormattedGrid } from "./message-types";
 
@@ -34,8 +43,13 @@ export function formatMessageForGrid(
   const visibleLines = wrappedLines.slice(0, rows);
   const overflow = wrappedLines.length > rows;
 
+  // Bottom-pack: blank rows go at the top, content ends on the last row.
+  // A 4-line message in a 5-row block occupies rows 2-5, leaving row 1
+  // blank; only a full 5-line message uses row 1 too.
+  const topOffset = rows - visibleLines.length;
   const paddedLines = Array.from({ length: rows }, (_, index) => {
-    const line = visibleLines[index] ?? "";
+    const sourceIndex = index - topOffset;
+    const line = sourceIndex >= 0 ? (visibleLines[sourceIndex] ?? "") : "";
     const trimmed = trimTrailingSpaces ? line.trimEnd() : line;
     return alignLine(trimmed, columns, align);
   });

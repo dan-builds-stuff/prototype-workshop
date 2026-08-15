@@ -20,10 +20,14 @@ describe("formatMessageForGrid", () => {
   });
 
   it("preserves blank lines", () => {
+    // Session 6: content bottom-packs, so these three wrapped lines land
+    // on the last three rows of the block, not the first three — check
+    // the tail of the block rather than assuming row 1 has content.
     const result = formatMessageForGrid("HELLO\n\nWORLD");
-    expect((result.lines[0] ?? "").trim()).toBe("HELLO");
-    expect((result.lines[1] ?? "").trim()).toBe("");
-    expect((result.lines[2] ?? "").trim()).toBe("WORLD");
+    const lastThree = result.lines.slice(-3);
+    expect((lastThree[0] ?? "").trim()).toBe("HELLO");
+    expect((lastThree[1] ?? "").trim()).toBe("");
+    expect((lastThree[2] ?? "").trim()).toBe("WORLD");
     expect(result.overflow).toBe(false);
   });
 
@@ -46,8 +50,10 @@ describe("formatMessageForGrid", () => {
   });
 
   it("uppercases by default", () => {
+    // Session 6: a single-line message bottom-packs onto the last row of
+    // the block, not the first.
     const result = formatMessageForGrid("hello board");
-    expect((result.lines[0] ?? "").trim()).toBe("HELLO BOARD");
+    expect((result.lines[result.lines.length - 1] ?? "").trim()).toBe("HELLO BOARD");
   });
 });
 

@@ -202,8 +202,13 @@ export function formatRichMessageForGrid(input: string, options: FormatOptions =
   const visibleWrapped = wrapped.slice(0, rows);
   const overflow = wrapped.length > rows;
 
+  // Bottom-pack, matching formatMessageForGrid() (session 6): blank rows
+  // go at the top, content ends on the last row. Row 1 only fills when
+  // the full row block is needed.
+  const topOffset = rows - visibleWrapped.length;
   const paddedRows: RichChar[][] = Array.from({ length: rows }, (_, index) => {
-    const line = visibleWrapped[index] ?? [];
+    const sourceIndex = index - topOffset;
+    const line = sourceIndex >= 0 ? (visibleWrapped[sourceIndex] ?? []) : [];
     let end = line.length;
     if (trimTrailingSpaces) {
       while (end > 0 && line[end - 1]?.char === " ") end--;
